@@ -18,7 +18,7 @@ export default function Timeline() {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
     itemsRef.current.forEach((el) => {
@@ -30,12 +30,13 @@ export default function Timeline() {
 
   return (
     <section id="timeline" className="relative py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Titre Section */}
-      <div className="mb-32 text-center animate-in-view in-view">
-        <h2 className="text-7xl lg:text-8xl font-black text-slate-900 dark:text-white mb-6">
-          Le Parcours<br/><span className="text-[#5BC8C8]">Complet</span>
+      {/* Section Title */}
+      <div className="mb-32 text-center">
+        <h2 className="text-6xl lg:text-8xl font-900 text-[var(--text-primary)] mb-6 leading-[1.1]">
+          Le Parcours<br />
+          <span className="text-gradient">Complet</span>
         </h2>
-        <p className="text-2xl text-slate-700 dark:text-slate-400 font-light max-w-2xl mx-auto">
+        <p className="text-xl text-[var(--text-secondary)] font-light max-w-2xl mx-auto leading-relaxed">
           7 phases essentielles pour transformer votre concept en dark kitchen opérationnelle
         </p>
       </div>
@@ -43,20 +44,27 @@ export default function Timeline() {
       {/* Timeline Container */}
       <div className="relative">
         {/* Vertical Line */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#5BC8C8] via-[#3A8A96] to-transparent -translate-x-1/2 opacity-30" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#5BC8C8] via-[#3A8A96] to-transparent -translate-x-1/2 opacity-30 hidden lg:block" />
 
         {/* Items */}
-        <div className="space-y-32">
+        <div className="space-y-24">
           {timelineData.map((phase, index) => (
             <div
               key={phase.id}
               ref={(el) => {
                 itemsRef.current[index] = el;
               }}
-              className={`animate-in-view ${visibleItems.includes(index) ? "in-view" : ""}`}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              style={{
+                opacity: visibleItems.includes(index) ? 1 : 0,
+                transform: visibleItems.includes(index)
+                  ? `translateY(0) translateX(0)`
+                  : index % 2 === 0
+                    ? `translateY(60px) translateX(-40px)`
+                    : `translateY(60px) translateX(40px)`,
+                transition: `all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 100}ms`,
+              }}
             >
-              <TimelineItem phase={phase} index={index} isVisible={visibleItems.includes(index)} />
+              <TimelineItem phase={phase} index={index} />
             </div>
           ))}
         </div>
