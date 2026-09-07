@@ -1,79 +1,90 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useRef } from "react";
 import TimelinePhase from "./TimelinePhase";
 import { timelineData } from "../data/timelineData";
 
 export default function Timeline() {
-  const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+  const phasesRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -100px 0px" }
+    );
+
+    phasesRef.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section className="flex-1 bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 py-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
-        <div className="mb-24 animate-fadeInUp">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl sm:text-6xl font-light mb-6 text-slate-900 dark:text-white">
-              Dark Kitchen <span className="font-bold text-[#5BC8C8]">Launch</span>
-            </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8">
-              A complete blueprint for launching your dark kitchen operation. From project preparation to opening day, every milestone matters.
+    <section className="flex-1 bg-gradient-to-b from-white via-slate-50 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 py-32">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero */}
+        <div className="mb-32 text-center">
+          <div className="inline-block mb-6 px-4 py-2 bg-[#EAF5F6] dark:bg-[#1A4E58]/30 rounded-full border border-[#5BC8C8]/20">
+            <p className="text-xs font-bold text-[#1A4E58] dark:text-[#5BC8C8] tracking-widest">
+              LAUNCH TIMELINE
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="px-4 py-2 bg-[#EAF5F6] dark:bg-[#1A4E58] rounded-full">
-                <p className="text-sm font-semibold text-[#1A4E58] dark:text-[#5BC8C8]">7 Phases</p>
+          </div>
+          <h1 className="text-6xl sm:text-7xl font-light mb-6 text-slate-900 dark:text-white tracking-tight">
+            Dark Kitchen <span className="font-bold bg-gradient-to-r from-[#5BC8C8] to-[#3A8A96] bg-clip-text text-transparent">Launch</span>
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            From preparation to opening. A comprehensive roadmap of every phase, milestone, and risk in your dark kitchen deployment journey.
+          </p>
+        </div>
+
+        {/* Timeline Container */}
+        <div className="relative">
+          {/* Central Vertical Line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#5BC8C8] via-[#3A8A96] to-[#1A4E58] transform -translate-x-1/2 opacity-30" />
+
+          {/* Phases */}
+          <div className="space-y-24">
+            {timelineData.map((phase, index) => (
+              <div
+                key={phase.id}
+                ref={(el) => {
+                  phasesRef.current[index] = el;
+                }}
+                className={`relative ${index % 2 === 0 ? "timeline-phase-left" : "timeline-phase-right"}`}
+                style={{
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              >
+                <TimelinePhase phase={phase} index={index} />
               </div>
-              <div className="px-4 py-2 bg-[#EAF5F6] dark:bg-[#1A4E58] rounded-full">
-                <p className="text-sm font-semibold text-[#1A4E58] dark:text-[#5BC8C8]">40+ Milestones</p>
-              </div>
-              <div className="px-4 py-2 bg-[#EAF5F6] dark:bg-[#1A4E58] rounded-full">
-                <p className="text-sm font-semibold text-[#1A4E58] dark:text-[#5BC8C8]">2-12 Months Duration</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Timeline Phases */}
-        <div className="space-y-4">
-          {timelineData.map((phase, index) => (
-            <TimelinePhase
-              key={phase.id}
-              phase={phase}
-              index={index}
-              isExpanded={expandedPhase === phase.id}
-              onToggle={() =>
-                setExpandedPhase(expandedPhase === phase.id ? null : phase.id)
-              }
-            />
-          ))}
-        </div>
-
-        {/* Risk Summary */}
-        <div className="mt-24 pt-12 border-t border-slate-200 dark:border-slate-700">
-          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-8">
-            Key Risk Areas
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Stats */}
+        <div className="mt-32 pt-20 border-t border-slate-200 dark:border-slate-700">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              "Insufficient capitalization",
-              "Supplier delays",
-              "Regulatory compliance",
-              "Team recruitment gaps",
-              "Timing misalignment",
-              "Technical validation",
-            ].map((risk, idx) => (
-              <div
-                key={idx}
-                className="p-4 bg-white dark:bg-slate-800 rounded-lg border border-red-100 dark:border-red-900/30 hover:shadow-md transition-shadow"
-                style={{ animationDelay: `${idx * 0.1}s` }}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 mt-2 bg-red-500 rounded-full flex-shrink-0" />
-                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {risk}
-                  </p>
-                </div>
+              { label: "Phases", value: "7" },
+              { label: "Milestones", value: "40+" },
+              { label: "Timeline", value: "2-12 Mo" },
+              { label: "Phases", value: "100%" },
+            ].map((stat, idx) => (
+              <div key={idx} className="text-center">
+                <p className="text-4xl font-bold bg-gradient-to-r from-[#5BC8C8] to-[#3A8A96] bg-clip-text text-transparent">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                  {stat.label}
+                </p>
               </div>
             ))}
           </div>
