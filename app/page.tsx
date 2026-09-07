@@ -1,24 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Header from "./components/Header";
+import Hero from "./components/Hero";
 import Timeline from "./components/Timeline";
 import Footer from "./components/Footer";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      setScrollY(window.scrollY);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <main className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
-      <Header isScrolled={isScrolled} />
+    <main className="min-h-screen bg-white dark:bg-slate-950 overflow-hidden">
+      <Header />
+      <Hero scrollY={scrollY} />
       <Timeline />
       <Footer />
     </main>

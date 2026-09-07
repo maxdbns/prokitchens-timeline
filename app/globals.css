@@ -4,52 +4,39 @@
   --color-primary-teal: #5BC8C8;
   --color-dark-teal: #1A4E58;
   --color-mid-teal: #3A8A96;
-  --color-near-black: #222222;
-  --color-white: #FFFFFF;
-  --color-light-teal: #B8E6E6;
-  --color-pale-blue-gray: #EAF5F6;
   --background: #FAFBFC;
-  --foreground: #1A1A1A;
-  --muted-bg: #EAF5F6;
-  --muted-text: #1A4E58;
-  --card-bg: #FFFFFF;
+  --foreground: #0A0E12;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0A0E12;
     --foreground: #F5F5F5;
-    --muted-bg: #1A4E58;
-    --muted-text: #5BC8C8;
-    --card-bg: #141820;
   }
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-rubik);
-  --font-mono: var(--font-geist-mono);
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-body {
-  background: var(--background);
-  background-image:
-    radial-gradient(circle at 20% 50%, rgba(91, 200, 200, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(58, 138, 150, 0.03) 0%, transparent 50%);
-  color: var(--foreground);
-  font-family: 'Rubik', system-ui, sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Animations */
-@keyframes slideInUp {
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Rubik', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Animations de scroll cinématiques */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(100px);
   }
   to {
     opacity: 1;
@@ -57,10 +44,32 @@ body {
   }
 }
 
-@keyframes scaleInCenter {
+@keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
   }
   to {
     opacity: 1;
@@ -71,147 +80,39 @@ body {
 @keyframes rotateIn {
   from {
     opacity: 0;
-    transform: rotate(-90deg) scale(0);
+    transform: rotateY(90deg);
   }
   to {
     opacity: 1;
-    transform: rotate(0deg) scale(1);
+    transform: rotateY(0deg);
   }
 }
 
-@keyframes lineExpand {
-  from {
-    transform: scaleY(0);
-    opacity: 0;
-  }
-  to {
-    transform: scaleY(1);
-    opacity: 1;
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(91, 200, 200, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(91, 200, 200, 0.6); }
 }
 
-@keyframes blob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(20px, -50px) scale(1.1); }
-  50% { transform: translate(-20px, 20px) scale(0.9); }
-  75% { transform: translate(50px, 50px) scale(1.05); }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-/* Phase animations on scroll */
-.phase-scroll-trigger {
+.animate-in-view {
   opacity: 0;
   transform: translateY(60px);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.phase-scroll-trigger.is-visible {
-  animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+.animate-in-view.in-view {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.phase-scroll-trigger.is-visible:nth-child(even) {
-  animation-delay: 0.1s;
+.float {
+  animation: float 6s ease-in-out infinite;
 }
 
-.timeline-dot {
-  animation: rotateIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  opacity: 0;
-}
-
-.timeline-line {
-  animation: lineExpand 0.8s ease-out forwards;
-  transform-origin: top;
-  opacity: 0;
-}
-
-.timeline-content {
-  animation: slideInUp 0.7s ease-out 0.15s forwards;
-  opacity: 0;
-}
-
-/* Hover card effect */
-.card-hover {
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-hover::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(91, 200, 200, 0.1) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.card-hover:hover::before {
-  left: 100%;
-}
-
-.card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(91, 200, 200, 0.15);
-  border-color: rgba(91, 200, 200, 0.4);
-}
-
-.card-hover:hover .card-title {
-  color: #5BC8C8;
-}
-
-.card-title {
-  transition: color 0.3s ease;
-}
-
-/* Scroll parallax */
-.parallax-text {
-  position: relative;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .parallax-text {
-    animation: shimmer 3s infinite;
-    background: linear-gradient(
-      90deg,
-      var(--foreground) 0%,
-      #5BC8C8 50%,
-      var(--foreground) 100%
-    );
-    background-size: 200% auto;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-
-/* Dot pulse */
-@keyframes dotPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(91, 200, 200, 0.7);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(91, 200, 200, 0);
-  }
-}
-
-.dot-pulse {
-  animation: dotPulse 2.5s infinite;
+.glow {
+  animation: glow 2s ease-in-out infinite;
 }
