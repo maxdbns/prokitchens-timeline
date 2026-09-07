@@ -17,7 +17,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
       <Header isScrolled={isScrolled} />
       <Timeline />
       <Footer />
